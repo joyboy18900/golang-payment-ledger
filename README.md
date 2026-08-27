@@ -43,5 +43,3 @@ go generate ./...   # regenerate repository mocks
 - `ledger_integration_test.go`: concurrency tests against a real Postgres,
   covering no double-spend under parallel withdrawals and idempotency
   replay applying exactly once.
-
-Integration tests own the database. Use a scratch Postgres.
