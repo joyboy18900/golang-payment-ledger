@@ -35,6 +35,12 @@ See `curl/flow.md` for full request/response examples.
   leaves no partial state - the transaction either commits in full or
   never applies at all, so the client can safely retry with the same
   `Idempotency-Key`.
+- The Postgres unique constraint is the correctness guarantee, not a cache.
+  A Redis (or similar) cache in front of `/transfer` would speed up replay
+  lookups, but only as a fast path on top of this constraint, never as a
+  replacement for it - Stripe describes their own idempotency handling the
+  same way. Not added here: this project stays Postgres-only per its own
+  scope, and `golang-redis` already covers Redis patterns separately.
 
 ## Tests
 
