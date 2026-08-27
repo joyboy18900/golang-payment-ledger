@@ -54,7 +54,7 @@ curl -X POST http://localhost:8080/transfer \
   -d '{"type":"transfer","from_account_id":1,"to_account_id":2,"amount":300}'
 ```
 
-Same `id`, same response - the transfer did not apply a second time.
+Same `id`, same response. The transfer did not apply a second time.
 
 ```json
 {"code":200,"message":"transfer applied","data":{"id":1,"type":"transfer","from_account_id":1,"to_account_id":2,"amount":300,"created_at":"2026-08-27T09:26:27.735495Z"}}
@@ -129,7 +129,7 @@ curl http://localhost:8080/accounts/2/balance
 {"code":200,"message":"balance retrieved","data":{"id":2,"balance":450}}
 ```
 
-`1000 - 300 - 200 = 500`, `0 + 300 + 150 = 450` - matches the three
+`1000 - 300 - 200 = 500`, `0 + 300 + 150 = 450`. These match the three
 transfers above.
 
 ```bash
