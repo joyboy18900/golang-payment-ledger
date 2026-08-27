@@ -24,9 +24,11 @@ The app runs pending migrations on startup, then serves on `:8080`. See
 - Idempotency is enforced by a unique constraint on `idempotency_key`; a
   crash mid-transfer leaves no partial state either way, since the whole
   transfer runs inside one atomic Postgres transaction.
-- A Redis cache in front would only speed up replay lookups, never replace
-  this constraint (Stripe layers theirs the same way). This project stays
-  Postgres-only.
+- Redis could sit in front of this instead of or alongside Postgres. It
+  would help under heavy duplicate-request traffic, or when several app
+  instances need a shared fast-path lookup before hitting the database.
+  Either way, the unique constraint stays the source of truth; a cache
+  only speeds up the common case. This project stays Postgres-only.
 
 See `curl/flow.md` for full request/response examples.
 
@@ -37,9 +39,9 @@ go test ./...
 go generate ./...   # regenerate repository mocks
 ```
 
-- `service/*_test.go` - table-driven validation and error-mapping tests.
-- `ledger_integration_test.go` - concurrency tests against a real Postgres:
-  no double-spend under parallel withdrawals, idempotency replay applies
-  once.
+- `service/*_test.go`: table-driven validation and error-mapping tests.
+- `ledger_integration_test.go`: concurrency tests against a real Postgres,
+  covering no double-spend under parallel withdrawals and idempotency
+  replay applying exactly once.
 
 Integration tests own the database. Use a scratch Postgres.
