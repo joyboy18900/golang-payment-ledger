@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
+	"time"
 
 	"golang-payment-ledger/handler"
 	"golang-payment-ledger/logs"
@@ -17,6 +19,7 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func main() {
@@ -71,12 +74,23 @@ func postgresDSN() string {
 }
 
 func openGormDB() *gorm.DB {
-	db, err := gorm.Open(postgres.Open(postgresDSN()), &gorm.Config{TranslateError: true})
+	db, err := gorm.Open(postgres.Open(postgresDSN()), &gorm.Config{
+		TranslateError: true,
+		Logger:         gormLogger(),
+	})
 	if err != nil {
 		panic(fmt.Errorf("open postgres: %w", err))
 	}
 
 	return db
+}
+
+func gormLogger() logger.Interface {
+	return logger.New(log.New(os.Stdout, "\r\n", log.LstdFlags), logger.Config{
+		SlowThreshold:             200 * time.Millisecond,
+		LogLevel:                  logger.Warn,
+		IgnoreRecordNotFoundError: true,
+	})
 }
 
 func runMigrations() {
